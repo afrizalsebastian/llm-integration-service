@@ -16,6 +16,7 @@ import (
 	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/infrastructure/middleware"
 	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/internal/generated"
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/cobra"
 )
 
@@ -65,6 +66,9 @@ func startHTTPServer(app *bootstrap.Application) {
 		log.Fatal("failed to init server")
 		os.Exit(1)
 	}
+
+	// METRICS
+	mainRouter.Handle("/metrics", promhttp.Handler()).Methods("GET")
 
 	apiV1Router.HandleFunc("/readiness", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -116,6 +120,7 @@ func startHTTPServer(app *bootstrap.Application) {
 func registerCommonMiddleware(_ *bootstrap.Application, handler http.Handler) http.Handler {
 	middleware := []middleware.MiddlewareFunc{
 		middleware.RequestTracing(),
+		middleware.MonitorMiddleware(),
 	}
 
 	for _, m := range middleware {
