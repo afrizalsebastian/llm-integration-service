@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	chromaclient "github.com/afrizalsebastian/ai-cv-evaluator-with-go/modules/chroma-client"
+	chromaclient "github.com/afrizalsebastian/llm-integration-service/modules/chroma-client"
 	"github.com/ledongthuc/pdf"
 )
 

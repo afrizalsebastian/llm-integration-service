@@ -6,7 +6,7 @@ import (
 	"errors"
 	"log"
 
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/modules/kafka"
+	"github.com/afrizalsebastian/llm-integration-service/modules/kafka"
 )
 
 type IKafkaProducer interface {

@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/application/controllers"
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/application/services"
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/bootstrap"
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/domain/repository"
+	"github.com/afrizalsebastian/llm-integration-service/application/controllers"
+	"github.com/afrizalsebastian/llm-integration-service/application/services"
+	"github.com/afrizalsebastian/llm-integration-service/bootstrap"
+	"github.com/afrizalsebastian/llm-integration-service/domain/repository"
 )
 
 type ServeController struct {

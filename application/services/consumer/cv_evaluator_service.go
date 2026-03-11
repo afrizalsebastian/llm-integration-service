@@ -8,12 +8,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/domain/models"
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/domain/models/dao"
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/domain/repository"
-	chromaclient "github.com/afrizalsebastian/ai-cv-evaluator-with-go/modules/chroma-client"
-	geminiclient "github.com/afrizalsebastian/ai-cv-evaluator-with-go/modules/gemini-client"
-	ingestdocument "github.com/afrizalsebastian/ai-cv-evaluator-with-go/modules/ingest-document"
+	"github.com/afrizalsebastian/llm-integration-service/domain/models"
+	"github.com/afrizalsebastian/llm-integration-service/domain/models/dao"
+	"github.com/afrizalsebastian/llm-integration-service/domain/repository"
+	chromaclient "github.com/afrizalsebastian/llm-integration-service/modules/chroma-client"
+	geminiclient "github.com/afrizalsebastian/llm-integration-service/modules/gemini-client"
+	ingestdocument "github.com/afrizalsebastian/llm-integration-service/modules/ingest-document"
 )
 
 type ICvEvaluatorConsumerService interface {

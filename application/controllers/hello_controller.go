@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/api"
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/application/services"
+	"github.com/afrizalsebastian/llm-integration-service/api"
+	"github.com/afrizalsebastian/llm-integration-service/application/services"
 )
 
 type IHelloController interface {

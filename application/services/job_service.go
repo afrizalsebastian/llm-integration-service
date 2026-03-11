@@ -6,11 +6,11 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/api"
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/config"
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/domain/models"
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/domain/models/dao"
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/domain/repository"
+	"github.com/afrizalsebastian/llm-integration-service/api"
+	"github.com/afrizalsebastian/llm-integration-service/config"
+	"github.com/afrizalsebastian/llm-integration-service/domain/models"
+	"github.com/afrizalsebastian/llm-integration-service/domain/models/dao"
+	"github.com/afrizalsebastian/llm-integration-service/domain/repository"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )

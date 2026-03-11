@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/api"
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/application/controllers"
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/bootstrap"
+	"github.com/afrizalsebastian/llm-integration-service/api"
+	"github.com/afrizalsebastian/llm-integration-service/application/controllers"
+	"github.com/afrizalsebastian/llm-integration-service/bootstrap"
 )
 
 type Server struct {

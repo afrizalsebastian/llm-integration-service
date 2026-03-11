@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	controller_consumer "github.com/afrizalsebastian/ai-cv-evaluator-with-go/application/controllers/consumer"
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/bootstrap"
+	controller_consumer "github.com/afrizalsebastian/llm-integration-service/application/controllers/consumer"
+	"github.com/afrizalsebastian/llm-integration-service/bootstrap"
 )
 
 type Consumer struct {

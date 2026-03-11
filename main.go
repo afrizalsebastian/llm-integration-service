@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/cli"
+	"github.com/afrizalsebastian/llm-integration-service/cli"
 )
 
 func main() {

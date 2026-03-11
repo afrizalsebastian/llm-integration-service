@@ -4,8 +4,8 @@ import (
 	"context"
 	"log"
 
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/bootstrap"
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/domain/models/dao"
+	"github.com/afrizalsebastian/llm-integration-service/bootstrap"
+	"github.com/afrizalsebastian/llm-integration-service/domain/models/dao"
 	"gorm.io/gorm"
 )
 

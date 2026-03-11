@@ -5,12 +5,12 @@ import (
 	"log"
 
 	"github.com/IBM/sarama"
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/config"
-	chromaclient "github.com/afrizalsebastian/ai-cv-evaluator-with-go/modules/chroma-client"
-	geminiclient "github.com/afrizalsebastian/ai-cv-evaluator-with-go/modules/gemini-client"
-	gomysql "github.com/afrizalsebastian/ai-cv-evaluator-with-go/modules/go-mysql"
-	ingestdocument "github.com/afrizalsebastian/ai-cv-evaluator-with-go/modules/ingest-document"
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/modules/kafka"
+	"github.com/afrizalsebastian/llm-integration-service/config"
+	chromaclient "github.com/afrizalsebastian/llm-integration-service/modules/chroma-client"
+	geminiclient "github.com/afrizalsebastian/llm-integration-service/modules/gemini-client"
+	gomysql "github.com/afrizalsebastian/llm-integration-service/modules/go-mysql"
+	ingestdocument "github.com/afrizalsebastian/llm-integration-service/modules/ingest-document"
+	"github.com/afrizalsebastian/llm-integration-service/modules/kafka"
 	"gorm.io/gorm"
 )
 

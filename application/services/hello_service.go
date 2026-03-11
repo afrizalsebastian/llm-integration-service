@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/api"
+	"github.com/afrizalsebastian/llm-integration-service/api"
 )
 
 type IHelloService interface {

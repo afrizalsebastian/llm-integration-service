@@ -3,7 +3,7 @@ package jobstore
 import (
 	"sync"
 
-	"github.com/afrizalsebastian/ai-cv-evaluator-with-go/domain/models"
+	"github.com/afrizalsebastian/llm-integration-service/domain/models"
 )
 
 type IJobStore interface {

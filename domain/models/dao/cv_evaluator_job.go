@@ -1,6 +1,6 @@
 package dao
 
-import "github.com/afrizalsebastian/ai-cv-evaluator-with-go/domain/models"
+import "github.com/afrizalsebastian/llm-integration-service/domain/models"
 
 type CvEvaluatorJob struct {
 	Id              int              `gorm:"column:id;primaryKey;autoIncrement"`
