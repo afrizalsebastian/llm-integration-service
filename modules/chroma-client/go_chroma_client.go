@@ -4,10 +4,14 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/afrizalsebastian/llm-integration-service/domain/models"
 	chroma "github.com/amikos-tech/chroma-go/pkg/api/v2"
 	"github.com/amikos-tech/chroma-go/pkg/embeddings"
 )
+
+type ChromaSearchResult struct {
+	Id   string
+	Text string
+}
 
 type ChromaNotFoundRecord struct {
 	Query          string
@@ -20,7 +24,7 @@ func (c *ChromaNotFoundRecord) Error() string {
 
 type IChromaClient interface {
 	Upsert(ctx context.Context, collectionName, id, content string, metadata map[string]interface{}) error
-	Query(ctx context.Context, collectionName, query string, topK int) ([]models.ChromaSearchResult, error)
+	Query(ctx context.Context, collectionName, query string, topK int) ([]ChromaSearchResult, error)
 }
 
 type chromaClient struct {
@@ -70,7 +74,7 @@ func (c *chromaClient) Upsert(ctx context.Context, collectionName, id, content s
 	return nil
 }
 
-func (c *chromaClient) Query(ctx context.Context, collectionName, query string, topK int) ([]models.ChromaSearchResult, error) {
+func (c *chromaClient) Query(ctx context.Context, collectionName, query string, topK int) ([]ChromaSearchResult, error) {
 	embedding := embeddings.NewConsistentHashEmbeddingFunction()
 	collection, err := c.cli.GetCollection(ctx, collectionName, chroma.WithEmbeddingFunctionGet(embedding))
 	if err != nil {
@@ -92,12 +96,12 @@ func (c *chromaClient) Query(ctx context.Context, collectionName, query string, 
 		return nil, &ChromaNotFoundRecord{CollectionName: collectionName, Query: query}
 	}
 
-	var results []models.ChromaSearchResult
+	var results []ChromaSearchResult
 	idGroup := resp.GetIDGroups()[0]
 	docsGroup := resp.GetDocumentsGroups()[0]
 
 	for i, id := range idGroup {
-		result := models.ChromaSearchResult{
+		result := ChromaSearchResult{
 			Id:   string(id),
 			Text: docsGroup[i].ContentString(),
 		}
