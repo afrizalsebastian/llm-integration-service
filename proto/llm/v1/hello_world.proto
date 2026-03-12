@@ -1,0 +1,10 @@
+syntax = "proto3";
+package llm.v1;
+
+option go_package = "github.com/afrizalsebastian/llm-integration-service/proto/gen/llm/api/v1";
+
+message HelloWorldResponse {
+  string message = 1;
+  int32 status = 2;
+  string data = 3;
+}

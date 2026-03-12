@@ -1,0 +1,21 @@
+version: v2
+plugins:
+  - remote: buf.build/protocolbuffers/go
+    out: proto/gen/go
+    opt:
+      - paths=source_relative
+
+  - remote: buf.build/grpc/go
+    out: proto/gen/go
+    opt:
+      - paths=source_relative
+
+  - remote: buf.build/grpc-ecosystem/gateway
+    out: proto/gen/go
+    opt:
+      - paths=source_relative
+
+  - remote: buf.build/grpc-ecosystem/openapiv2
+    out: proto/gen/swagger
+    opt:
+      - output_format=json
