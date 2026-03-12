@@ -11,7 +11,6 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -27,19 +26,19 @@ var File_llm_v1_llm_service_proto protoreflect.FileDescriptor
 
 const file_llm_v1_llm_service_proto_rawDesc = "" +
 	"\n" +
-	"\x18llm/v1/llm_service.proto\x12\x06llm.v1\x1a\x18llm/v1/hello_world.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x15google/api/http.proto\x1a.protoc-gen-openapiv2/options/annotations.proto2\x84\x01\n" +
+	"\x18llm/v1/llm_service.proto\x12\x06llm.v1\x1a\x18llm/v1/hello_world.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x15google/api/http.proto\x1a.protoc-gen-openapiv2/options/annotations.proto2\x87\x01\n" +
 	"\n" +
-	"LlmService\x12v\n" +
+	"LlmService\x12y\n" +
 	"\n" +
-	"HelloWorld\x12\x16.google.protobuf.Empty\x1a\x1a.llm.v1.HelloWorldResponse\"4\x92A\x1d\x12\x1bHello world, dummy endpoint\x82\xd3\xe4\x93\x02\x0e\x12\f/hello-worldBq\x92A$\x12\"\n" +
+	"HelloWorld\x12\x19.llm.v1.HelloWorldRequest\x1a\x1a.llm.v1.HelloWorldResponse\"4\x92A\x1d\x12\x1bHello world, dummy endpoint\x82\xd3\xe4\x93\x02\x0e\x12\f/hello-worldBq\x92A$\x12\"\n" +
 	"\x1bIntegration Third Party LLM2\x031.0ZHgithub.com/afrizalsebastian/llm-integration-service/proto/gen/llm/api/v1b\x06proto3"
 
 var file_llm_v1_llm_service_proto_goTypes = []any{
-	(*emptypb.Empty)(nil),      // 0: google.protobuf.Empty
+	(*HelloWorldRequest)(nil),  // 0: llm.v1.HelloWorldRequest
 	(*HelloWorldResponse)(nil), // 1: llm.v1.HelloWorldResponse
 }
 var file_llm_v1_llm_service_proto_depIdxs = []int32{
-	0, // 0: llm.v1.LlmService.HelloWorld:input_type -> google.protobuf.Empty
+	0, // 0: llm.v1.LlmService.HelloWorld:input_type -> llm.v1.HelloWorldRequest
 	1, // 1: llm.v1.LlmService.HelloWorld:output_type -> llm.v1.HelloWorldResponse
 	1, // [1:2] is the sub-list for method output_type
 	0, // [0:1] is the sub-list for method input_type

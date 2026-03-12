@@ -11,7 +11,6 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -27,7 +26,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type LlmServiceClient interface {
-	HelloWorld(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*HelloWorldResponse, error)
+	HelloWorld(ctx context.Context, in *HelloWorldRequest, opts ...grpc.CallOption) (*HelloWorldResponse, error)
 }
 
 type llmServiceClient struct {
@@ -38,7 +37,7 @@ func NewLlmServiceClient(cc grpc.ClientConnInterface) LlmServiceClient {
 	return &llmServiceClient{cc}
 }
 
-func (c *llmServiceClient) HelloWorld(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*HelloWorldResponse, error) {
+func (c *llmServiceClient) HelloWorld(ctx context.Context, in *HelloWorldRequest, opts ...grpc.CallOption) (*HelloWorldResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(HelloWorldResponse)
 	err := c.cc.Invoke(ctx, LlmService_HelloWorld_FullMethodName, in, out, cOpts...)
@@ -52,7 +51,7 @@ func (c *llmServiceClient) HelloWorld(ctx context.Context, in *emptypb.Empty, op
 // All implementations must embed UnimplementedLlmServiceServer
 // for forward compatibility.
 type LlmServiceServer interface {
-	HelloWorld(context.Context, *emptypb.Empty) (*HelloWorldResponse, error)
+	HelloWorld(context.Context, *HelloWorldRequest) (*HelloWorldResponse, error)
 	mustEmbedUnimplementedLlmServiceServer()
 }
 
@@ -63,7 +62,7 @@ type LlmServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedLlmServiceServer struct{}
 
-func (UnimplementedLlmServiceServer) HelloWorld(context.Context, *emptypb.Empty) (*HelloWorldResponse, error) {
+func (UnimplementedLlmServiceServer) HelloWorld(context.Context, *HelloWorldRequest) (*HelloWorldResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method HelloWorld not implemented")
 }
 func (UnimplementedLlmServiceServer) mustEmbedUnimplementedLlmServiceServer() {}
@@ -88,7 +87,7 @@ func RegisterLlmServiceServer(s grpc.ServiceRegistrar, srv LlmServiceServer) {
 }
 
 func _LlmService_HelloWorld_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(HelloWorldRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -100,7 +99,7 @@ func _LlmService_HelloWorld_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: LlmService_HelloWorld_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LlmServiceServer).HelloWorld(ctx, req.(*emptypb.Empty))
+		return srv.(LlmServiceServer).HelloWorld(ctx, req.(*HelloWorldRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

@@ -21,6 +21,42 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type HelloWorldRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *HelloWorldRequest) Reset() {
+	*x = HelloWorldRequest{}
+	mi := &file_llm_v1_hello_world_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HelloWorldRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HelloWorldRequest) ProtoMessage() {}
+
+func (x *HelloWorldRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_llm_v1_hello_world_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HelloWorldRequest.ProtoReflect.Descriptor instead.
+func (*HelloWorldRequest) Descriptor() ([]byte, []int) {
+	return file_llm_v1_hello_world_proto_rawDescGZIP(), []int{0}
+}
+
 type HelloWorldResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
@@ -32,7 +68,7 @@ type HelloWorldResponse struct {
 
 func (x *HelloWorldResponse) Reset() {
 	*x = HelloWorldResponse{}
-	mi := &file_llm_v1_hello_world_proto_msgTypes[0]
+	mi := &file_llm_v1_hello_world_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -44,7 +80,7 @@ func (x *HelloWorldResponse) String() string {
 func (*HelloWorldResponse) ProtoMessage() {}
 
 func (x *HelloWorldResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_llm_v1_hello_world_proto_msgTypes[0]
+	mi := &file_llm_v1_hello_world_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -57,7 +93,7 @@ func (x *HelloWorldResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HelloWorldResponse.ProtoReflect.Descriptor instead.
 func (*HelloWorldResponse) Descriptor() ([]byte, []int) {
-	return file_llm_v1_hello_world_proto_rawDescGZIP(), []int{0}
+	return file_llm_v1_hello_world_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *HelloWorldResponse) GetMessage() string {
@@ -85,7 +121,8 @@ var File_llm_v1_hello_world_proto protoreflect.FileDescriptor
 
 const file_llm_v1_hello_world_proto_rawDesc = "" +
 	"\n" +
-	"\x18llm/v1/hello_world.proto\x12\x06llm.v1\"Z\n" +
+	"\x18llm/v1/hello_world.proto\x12\x06llm.v1\"\x13\n" +
+	"\x11HelloWorldRequest\"Z\n" +
 	"\x12HelloWorldResponse\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage\x12\x16\n" +
 	"\x06status\x18\x02 \x01(\x05R\x06status\x12\x12\n" +
@@ -103,9 +140,10 @@ func file_llm_v1_hello_world_proto_rawDescGZIP() []byte {
 	return file_llm_v1_hello_world_proto_rawDescData
 }
 
-var file_llm_v1_hello_world_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_llm_v1_hello_world_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_llm_v1_hello_world_proto_goTypes = []any{
-	(*HelloWorldResponse)(nil), // 0: llm.v1.HelloWorldResponse
+	(*HelloWorldRequest)(nil),  // 0: llm.v1.HelloWorldRequest
+	(*HelloWorldResponse)(nil), // 1: llm.v1.HelloWorldResponse
 }
 var file_llm_v1_hello_world_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
@@ -126,7 +164,7 @@ func file_llm_v1_hello_world_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_llm_v1_hello_world_proto_rawDesc), len(file_llm_v1_hello_world_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   1,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

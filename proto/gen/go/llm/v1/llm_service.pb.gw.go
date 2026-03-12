@@ -22,7 +22,6 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // Suppress "imported and not used" errors
@@ -38,7 +37,7 @@ var (
 
 func request_LlmService_HelloWorld_0(ctx context.Context, marshaler runtime.Marshaler, client LlmServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq emptypb.Empty
+		protoReq HelloWorldRequest
 		metadata runtime.ServerMetadata
 	)
 	if req.Body != nil {
@@ -50,7 +49,7 @@ func request_LlmService_HelloWorld_0(ctx context.Context, marshaler runtime.Mars
 
 func local_request_LlmService_HelloWorld_0(ctx context.Context, marshaler runtime.Marshaler, server LlmServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq emptypb.Empty
+		protoReq HelloWorldRequest
 		metadata runtime.ServerMetadata
 	)
 	msg, err := server.HelloWorld(ctx, &protoReq)
