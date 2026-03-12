@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/api"
-	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/config"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/domain/models/dao"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/domain/models/dto"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/domain/repository"
@@ -23,12 +22,16 @@ type IJobService interface {
 type jobService struct {
 	cvEvaluatorJobRepository repository.ICvEvaluatorJobRepository
 	kafkaProducer            IKafkaProducer
+
+	//Topic
+	cvEvaluatorTopic string
 }
 
-func NewEvaluateServce(cvEvaluatorJobRepository repository.ICvEvaluatorJobRepository, kafkaProducer IKafkaProducer) IJobService {
+func NewEvaluateServce(cvEvaluatorJobRepository repository.ICvEvaluatorJobRepository, kafkaProducer IKafkaProducer, cvEvaluatorTopic string) IJobService {
 	return &jobService{
 		cvEvaluatorJobRepository: cvEvaluatorJobRepository,
 		kafkaProducer:            kafkaProducer,
+		cvEvaluatorTopic:         cvEvaluatorTopic,
 	}
 }
 
@@ -46,7 +49,7 @@ func (e *jobService) EnqueueJob(ctx context.Context, request *dto.EvaluateReques
 		return api.CreateWebResponse("internal server error", http.StatusInternalServerError, nil, nil)
 	}
 
-	go e.kafkaProducer.PublishMessage(ctx, config.Get().KafkaCvEvaluatorTopic, nil, jobId)
+	go e.kafkaProducer.PublishMessage(ctx, e.cvEvaluatorTopic, nil, jobId)
 
 	resp := &dto.EvaluateResponse{
 		JobId:  jobId,

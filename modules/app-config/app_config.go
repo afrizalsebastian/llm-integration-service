@@ -1,9 +1,8 @@
-package config
+package appconfig
 
 import (
 	"errors"
 	"log"
-	"os"
 	"reflect"
 
 	"github.com/spf13/viper"
@@ -32,44 +31,7 @@ type Config struct {
 	KafkaMaxRetryPolicy        int      `mapstructure:"KAFKA_MAX_RETRY_POLICY"`
 	KafkaCvEvaluatorTopic      string   `mapstructure:"KAFKA_CV_EVALUATOR_TOPIC"`
 	KafkaCvEvaluatorTopicGroup string   `mapstructure:"KAFKA_CV_EVALUATOR_TOPIC_GROUP"`
-}
-
-var appConfig Config
-
-func Init() error {
-	v := viper.New()
-
-	v.SetConfigName(".env")
-	v.SetConfigType("env")
-	v.AutomaticEnv()
-
-	wd, err := os.Getwd()
-	if err != nil {
-		log.Println("Failed to get working directory")
-
-		return ErrOsGetPwd
-	}
-	v.AddConfigPath(wd)
-
-	if err := v.ReadInConfig(); err != nil {
-		var errConfigFileNotFound viper.ConfigFileNotFoundError
-		if errors.As(err, &errConfigFileNotFound) {
-			log.Println("No .env file found")
-		} else {
-			log.Println("Failed to read .env file")
-			return ErrReadConfigFile
-		}
-	}
-
-	bindEnvs(v, &appConfig)
-
-	if err := v.Unmarshal(&appConfig); err != nil {
-		log.Println("error to unmarshal config file")
-		return ErrUnmarshalConfigFile
-	}
-
-	return nil
-
+	GrpcPort                   string   `mapstructure:"GRPC_PORT"`
 }
 
 func bindEnvs(v *viper.Viper, config interface{}) {
@@ -83,4 +45,32 @@ func bindEnvs(v *viper.Viper, config interface{}) {
 	}
 }
 
-func Get() *Config { return &appConfig }
+func Init(wd string) (*Config, error) {
+	var appConfig Config
+	v := viper.New()
+
+	v.SetConfigName(".env")
+	v.SetConfigType("env")
+	v.AutomaticEnv()
+
+	v.AddConfigPath(wd)
+
+	if err := v.ReadInConfig(); err != nil {
+		var errConfigFileNotFound viper.ConfigFileNotFoundError
+		if errors.As(err, &errConfigFileNotFound) {
+			log.Println("No .env file found")
+		} else {
+			log.Println("Failed to read .env file")
+			return nil, ErrReadConfigFile
+		}
+	}
+
+	bindEnvs(v, &appConfig)
+
+	if err := v.Unmarshal(&appConfig); err != nil {
+		log.Println("error to unmarshal config file")
+		return nil, ErrUnmarshalConfigFile
+	}
+
+	return &appConfig, nil
+}

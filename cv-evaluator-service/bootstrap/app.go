@@ -3,9 +3,10 @@ package bootstrap
 import (
 	"context"
 	"log"
+	"os"
 
 	"github.com/IBM/sarama"
-	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/config"
+	appconfig "github.com/afrizalsebastian/llm-integration-service/modules/app-config"
 	chromaclient "github.com/afrizalsebastian/llm-integration-service/modules/chroma-client"
 	geminiclient "github.com/afrizalsebastian/llm-integration-service/modules/gemini-client"
 	gomysql "github.com/afrizalsebastian/llm-integration-service/modules/go-mysql"
@@ -15,7 +16,7 @@ import (
 )
 
 type Application struct {
-	ENV           *config.Config
+	ENV           *appconfig.Config
 	GeminiClient  geminiclient.IGeminiClient
 	ChromaClient  chromaclient.IChromaClient
 	Ingest        ingestdocument.IIngestFile
@@ -27,11 +28,15 @@ func NewApp() *Application {
 	ctx := context.Background()
 	app := &Application{}
 
-	if err := config.Init(); err != nil {
-		log.Fatal("failed to initialize configuration")
+	wd, err := os.Getwd()
+	if err != nil {
+		log.Fatal("Failed to get working directory")
 	}
 
-	app.ENV = config.Get()
+	app.ENV, err = appconfig.Init(wd)
+	if err != nil {
+		log.Fatal("failed to initialize configuration")
+	}
 
 	// Init DB
 	dbConfig := &gomysql.MysqlConfig{

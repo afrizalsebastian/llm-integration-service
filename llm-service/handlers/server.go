@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/afrizalsebastian/llm-integration-service/llm-service/application/controllers"
+	"github.com/afrizalsebastian/llm-integration-service/llm-service/bootstrap"
 	proto "github.com/afrizalsebastian/llm-integration-service/proto/gen/go/llm/v1"
 )
 
@@ -13,7 +14,7 @@ type Server struct {
 	llmGrpcController controllers.ILlmGRPCController
 }
 
-func NewServer() (*Server, error) {
+func NewServer(_ *bootstrap.Application) (*Server, error) {
 	di := initDI()
 	server := &Server{
 		llmGrpcController: di.llmGrpcController,
