@@ -15,7 +15,7 @@ var (
 )
 
 type Config struct {
-	AppPort                    int64    `mapstructure:"PORT"`
+	AppPort                    int      `mapstructure:"PORT"`
 	GeminiApiKey               string   `mapstructure:"GEMINI_API_KEY"`
 	ChromaUrl                  string   `mapstructure:"CHROMA_URL"`
 	GeminiModel                string   `mapstructure:"GEMINI_MODEl"`
