@@ -5,11 +5,14 @@ import (
 	"strconv"
 	"time"
 
+	grpcprometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
 var (
+	GrpcMetric = grpcprometheus.DefaultServerMetrics
+
 	httpRequestTotal = promauto.NewCounterVec(
 		prometheus.CounterOpts{
 			Name: "http_request_total_cust",
@@ -44,4 +47,8 @@ func MonitorMiddleware() func(next http.Handler) http.Handler {
 			httpRequestDuration.WithLabelValues(r.Method, path).Observe(duration)
 		})
 	}
+}
+
+func init() {
+	GrpcMetric.EnableHandlingTimeHistogram()
 }

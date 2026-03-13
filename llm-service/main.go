@@ -17,6 +17,7 @@ import (
 	"github.com/afrizalsebastian/llm-integration-service/llm-service/handlers"
 	"github.com/afrizalsebastian/llm-integration-service/llm-service/infrastructure/middleware"
 	proto "github.com/afrizalsebastian/llm-integration-service/proto/gen/go/llm/v1"
+	grpcprometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
@@ -83,7 +84,10 @@ func startGRPCServer(app *bootstrap.Application) (*grpc.Server, error) {
 		return nil, err
 	}
 
-	server := grpc.NewServer()
+	server := grpc.NewServer(
+		grpc.UnaryInterceptor(grpcprometheus.UnaryServerInterceptor),
+		grpc.StreamInterceptor(grpcprometheus.StreamServerInterceptor),
+	)
 	grpcHandlers, err := handlers.NewServer(app)
 	if err != nil {
 		log.Fatal("failed to init server")
@@ -91,6 +95,9 @@ func startGRPCServer(app *bootstrap.Application) (*grpc.Server, error) {
 	}
 	proto.RegisterLlmServiceServer(server, grpcHandlers)
 	reflection.Register(server)
+
+	// init metric for all register
+	middleware.GrpcMetric.InitializeMetrics(server)
 
 	go func() {
 		log.Printf("🚀 GRPC Server is running on port %s\n", app.ENV.GrpcPort)
