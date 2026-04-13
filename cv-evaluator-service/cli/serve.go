@@ -15,6 +15,7 @@ import (
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/handlers"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/infrastructure/middleware"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/internal/generated"
+	sharedmiddleware "github.com/afrizalsebastian/llm-integration-service/modules/shared-middleware"
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/cobra"
@@ -50,8 +51,8 @@ func startHTTPServer(app *bootstrap.Application) {
 	defer cancel()
 
 	mainRouter := mux.NewRouter()
-	mainRouter.Use(middleware.RecoveryMiddleware())
-	mainRouter.Use(middleware.CORSMiddleware)
+	mainRouter.Use(sharedmiddleware.RecoveryMiddleware())
+	mainRouter.Use(sharedmiddleware.CORSMiddleware)
 
 	// Not found handler
 	mainRouter.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -118,8 +119,8 @@ func startHTTPServer(app *bootstrap.Application) {
 }
 
 func registerCommonMiddleware(_ *bootstrap.Application, handler http.Handler) http.Handler {
-	middleware := []middleware.MiddlewareFunc{
-		middleware.RequestTracing(),
+	middleware := []sharedmiddleware.MiddlewareFunc{
+		sharedmiddleware.RequestTracing(),
 		middleware.MonitorMiddleware(),
 	}
 

@@ -32,6 +32,10 @@ type Config struct {
 	KafkaCvEvaluatorTopic      string   `mapstructure:"KAFKA_CV_EVALUATOR_TOPIC"`
 	KafkaCvEvaluatorTopicGroup string   `mapstructure:"KAFKA_CV_EVALUATOR_TOPIC_GROUP"`
 	GrpcPort                   string   `mapstructure:"GRPC_PORT"`
+
+	GoogleAuthClientID     string `mapstructure:"GOOGLE_CLIENT_ID"`
+	GoogleAuthClientSecret string `mapstructure:"GOOGLE_CLIENT_SECRET"`
+	GoogleCallbackUrl      string `mapstructure:"GOOGLE_CALLBACK_URL"`
 }
 
 func bindEnvs(v *viper.Viper, config interface{}) {
