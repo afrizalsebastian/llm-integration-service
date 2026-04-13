@@ -72,8 +72,5 @@ func (g *googleAuthService) GoogleAuthCallback(ctx context.Context, cookieState 
 		return "/not-found"
 	}
 
-	userData, _ := json.MarshalIndent(googleUser, "", " ")
-	fmt.Println(string(userData))
-
 	return "/api/v1/readiness"
 }
