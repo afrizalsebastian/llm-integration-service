@@ -2,10 +2,10 @@ package bootstrap
 
 import (
 	"context"
-	"log"
 	"os"
 
 	appconfig "github.com/afrizalsebastian/go-common-modules/app-config"
+	"github.com/afrizalsebastian/go-common-modules/logger"
 	"github.com/afrizalsebastian/llm-integration-service/modules/config"
 	geminiclient "github.com/afrizalsebastian/llm-integration-service/modules/gemini-client"
 )
@@ -19,21 +19,25 @@ func NewApp() *Application {
 	ctx := context.Background()
 	app := &Application{}
 
+	l := logger.New()
+
 	wd, err := os.Getwd()
 	if err != nil {
-		log.Fatal("Failed to get working directory")
+		l.Error("Failed to get working directory").Msg()
 		return nil
 	}
 
 	app.ENV, err = appconfig.Init[config.Config](wd)
 	if err != nil {
-		log.Fatal("failed to initialize configuration")
+		l.Error("failed to initialize configuration").Msg()
+		os.Exit(1)
 	}
 
 	// Init Gemini Client
 	geminiCient, err := geminiclient.NewGeminiAiCLient(ctx, app.ENV.GeminiApiKey, app.ENV.GeminiModel)
 	if err != nil {
-		log.Fatal("failed to init gemini client")
+		l.Error("failed to init gemini client").Msg()
+		os.Exit(1)
 	}
 	app.GeminiClient = geminiCient
 

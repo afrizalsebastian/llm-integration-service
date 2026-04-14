@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/IBM/sarama v1.47.0
-	github.com/afrizalsebastian/go-common-modules v0.0.0-20260414090157-ff2d384042c0
+	github.com/afrizalsebastian/go-common-modules v0.0.0-20260414100515-efbf613699ae
 	github.com/amikos-tech/chroma-go v0.2.5
 	github.com/go-playground/validator/v10 v10.28.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0

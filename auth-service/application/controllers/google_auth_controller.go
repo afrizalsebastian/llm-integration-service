@@ -4,8 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"log"
-
+	"github.com/afrizalsebastian/go-common-modules/logger"
 	"github.com/afrizalsebastian/llm-integration-service/auth-service/application/services"
 )
 
@@ -29,9 +28,11 @@ func (g *googleAuthContoller) GoogleOauthRedirect(ctx context.Context, w http.Re
 }
 
 func (g *googleAuthContoller) GoogleAuthCallback(ctx context.Context, w http.ResponseWriter, r *http.Request) string {
+	l := logger.New().WithContext(ctx)
+
 	cookieState, err := r.Cookie("oauth_state")
 	if err != nil || cookieState.Value != r.URL.Query().Get("state") {
-		log.Println("invalid oauth_state")
+		l.Error("invalid oauth_state").Msg()
 		return "/not-found"
 	}
 

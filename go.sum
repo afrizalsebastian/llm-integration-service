@@ -17,8 +17,8 @@ github.com/Masterminds/semver v1.5.0/go.mod h1:MB6lktGJrhw8PrUyiEoblNEGEQ+RzHPF0
 github.com/Microsoft/go-winio v0.6.2 h1:F2VQgta7ecxGYO8k3ZZz3RS8fVIXVxONVUPlNERoyfY=
 github.com/Microsoft/go-winio v0.6.2/go.mod h1:yd8OoFMLzJbo9gZq8j5qaps8bJ9aShtEA8Ipt1oGCvU=
 github.com/RaveNoX/go-jsoncommentstrip v1.0.0/go.mod h1:78ihd09MekBnJnxpICcwzCMzGrKSKYe4AqU6PDYYpjk=
-github.com/afrizalsebastian/go-common-modules v0.0.0-20260414090157-ff2d384042c0 h1:aZxjub3wdNL+xlfevHxP60KgJ93FMv8aVj9FNp+P9Ec=
-github.com/afrizalsebastian/go-common-modules v0.0.0-20260414090157-ff2d384042c0/go.mod h1:Q1Nl1l6bIgJ4sehUrmqOSQfAgaZMkmrmFSYuU2y1TqA=
+github.com/afrizalsebastian/go-common-modules v0.0.0-20260414100515-efbf613699ae h1:lI0oYkPz9LmCMcZ9b5hFQXCb39YExiJQrK8eaFeGOMM=
+github.com/afrizalsebastian/go-common-modules v0.0.0-20260414100515-efbf613699ae/go.mod h1:Q1Nl1l6bIgJ4sehUrmqOSQfAgaZMkmrmFSYuU2y1TqA=
 github.com/amikos-tech/chroma-go v0.2.5 h1:CxM8A9FlwtgQmlL0ZgmpfO6Hm7obYvO7WIg2aoo1PK8=
 github.com/amikos-tech/chroma-go v0.2.5/go.mod h1:j6Lw1dAWnGwUeRNCuciyquNZrQm37yJiEQmGbQFKDqs=
 github.com/apapsch/go-jsonmerge/v2 v2.0.0 h1:axGnT1gRIfimI7gJifB699GoE/oq+F2MU7Dml6nw9rQ=

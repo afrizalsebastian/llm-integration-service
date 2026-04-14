@@ -5,10 +5,9 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
-	"log"
 	"net/http"
 
+	"github.com/afrizalsebastian/go-common-modules/logger"
 	"github.com/afrizalsebastian/llm-integration-service/auth-service/domain/dto"
 	"golang.org/x/oauth2"
 )
@@ -45,22 +44,23 @@ func (g *googleAuthService) GoogleOauthRedirect(ctx context.Context, w http.Resp
 		},
 	)
 
-	fmt.Println("MASUK SINI", g.GoogleOauthConfig)
 	url := g.GoogleOauthConfig.AuthCodeURL(state, oauth2.AccessTypeOffline)
 	return url
 }
 
 func (g *googleAuthService) GoogleAuthCallback(ctx context.Context, cookieState *http.Cookie, code string) string {
+	l := logger.New().WithContext(ctx)
+
 	token, err := g.GoogleOauthConfig.Exchange(ctx, code)
 	if err != nil {
-		log.Println("error when exchange code to google")
+		l.Error("error when exchange code to google").Msg()
 		return "/not-found"
 	}
 
 	client := g.GoogleOauthConfig.Client(ctx, token)
 	resp, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
 	if err != nil {
-		log.Println("error when get profile from google")
+		l.Error("error when get profile from google").Msg()
 		return "/not-found"
 	}
 
@@ -68,7 +68,7 @@ func (g *googleAuthService) GoogleAuthCallback(ctx context.Context, cookieState 
 
 	var googleUser dto.GoogleUser
 	if err = json.NewDecoder(resp.Body).Decode(&googleUser); err != nil {
-		log.Println("error when unmarshal user profile data")
+		l.Error("error when unmarshal user profile data").Msg()
 		return "/not-found"
 	}
 

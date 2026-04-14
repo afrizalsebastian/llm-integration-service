@@ -3,9 +3,9 @@ package services
 import (
 	"context"
 	"errors"
-	"log"
 	"net/http"
 
+	"github.com/afrizalsebastian/go-common-modules/logger"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/api"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/domain/models/dao"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/domain/models/dto"
@@ -36,6 +36,8 @@ func NewEvaluateServce(cvEvaluatorJobRepository repository.ICvEvaluatorJobReposi
 }
 
 func (e *jobService) EnqueueJob(ctx context.Context, request *dto.EvaluateRequest) api.WebResponse {
+	l := logger.New().WithContext(ctx)
+
 	jobId := uuid.New().String()
 	jobItem := &dao.CvEvaluatorJob{
 		JobId:    jobId,
@@ -45,7 +47,7 @@ func (e *jobService) EnqueueJob(ctx context.Context, request *dto.EvaluateReques
 	}
 
 	if err := e.cvEvaluatorJobRepository.CreateJobItem(ctx, jobItem); err != nil {
-		log.Println("failed to create job")
+		l.Error("failed to create job").Msg()
 		return api.CreateWebResponse("internal server error", http.StatusInternalServerError, nil, nil)
 	}
 
@@ -60,9 +62,11 @@ func (e *jobService) EnqueueJob(ctx context.Context, request *dto.EvaluateReques
 }
 
 func (e *jobService) ResultJob(ctx context.Context, jobId string) api.WebResponse {
+	l := logger.New().WithContext(ctx)
+
 	jobItem, err := e.cvEvaluatorJobRepository.GetByJobId(ctx, jobId)
 	if err != nil {
-		log.Println("error when get job")
+		l.Error("error when get job").Msg()
 
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return api.CreateWebResponse("Job Not Found", http.StatusNotFound, nil, nil)

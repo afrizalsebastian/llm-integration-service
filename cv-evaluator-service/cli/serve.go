@@ -4,13 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"github.com/afrizalsebastian/go-common-modules/logger"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/bootstrap"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/handlers"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/infrastructure/middleware"
@@ -50,13 +50,15 @@ func startHTTPServer(app *bootstrap.Application) {
 	_, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	l := logger.New()
+
 	mainRouter := mux.NewRouter()
 	mainRouter.Use(sharedmiddleware.RecoveryMiddleware())
 	mainRouter.Use(sharedmiddleware.CORSMiddleware)
 
 	// Not found handler
 	mainRouter.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println("404 --- route not found")
+		l.Info("404 --- route not found").Msg()
 		http.Error(w, "404 - route not found", http.StatusNotFound)
 	})
 
@@ -64,7 +66,7 @@ func startHTTPServer(app *bootstrap.Application) {
 
 	apiServer, err := handlers.NewServer(app)
 	if err != nil {
-		log.Fatal("failed to init server")
+		l.Error("failed to init server").Msg()
 		os.Exit(1)
 	}
 
@@ -97,25 +99,25 @@ func startHTTPServer(app *bootstrap.Application) {
 
 	// start server
 	go func() {
-		log.Printf("🚀 Server is running on port %v\n", app.ENV.AppPort)
+		l.Infof("🚀 Server is running on port %v", app.ENV.AppPort).Msg()
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Fatalln("server failed to start")
+			l.Error("server failed to start").Msg()
 			os.Exit(1)
 		}
 	}()
 
 	// wait for signal
 	_ = <-signalChan
-	log.Println("Shutting down server...")
+	l.Info("Shutting down server...").Msg()
 
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer shutdownCancel()
 
 	if err := server.Shutdown(shutdownCtx); err != nil {
-		log.Println("Server forced to shutdown")
+		l.Error("Server forced to shutdown").Msg()
 	}
 
-	log.Println("✅ Server exited gracefully")
+	l.Info("✅ Server exited gracefully").Msg()
 }
 
 func registerCommonMiddleware(_ *bootstrap.Application, handler http.Handler) http.Handler {

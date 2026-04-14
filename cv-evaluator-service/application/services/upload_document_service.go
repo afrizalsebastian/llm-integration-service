@@ -3,14 +3,13 @@ package services
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
 
+	"github.com/afrizalsebastian/go-common-modules/logger"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/api"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/domain/models/dto"
 	"github.com/google/uuid"
@@ -37,14 +36,16 @@ func NewUploadDocumentService(basePath string) IUploadDocumentService {
 }
 
 func (u *uploadDocumentService) SaveUploadedDocument(ctx context.Context, req *dto.UploadDocumentRequest) api.WebResponse {
+	l := logger.New().WithContext(ctx)
+
 	folderId := uuid.New().String()
 	errChan := make(chan error, 2)
 	// save cv file
 
 	go func() {
-		fmt.Println("upload cv")
+		l.Info("upload cv").Msg()
 		req.CvFileHeader.Filename = "cv_file.pdf"
-		if err := u.saveToPath(folderId, req.CvFile, req.CvFileHeader); err != nil {
+		if err := u.saveToPath(ctx, folderId, req.CvFile, req.CvFileHeader); err != nil {
 			errChan <- err
 			return
 		}
@@ -52,20 +53,20 @@ func (u *uploadDocumentService) SaveUploadedDocument(ctx context.Context, req *d
 	}()
 
 	go func() {
-		fmt.Println("upload report")
+		l.Info("upload report").Msg()
 		req.ReportFileHeader.Filename = "report_file.pdf"
-		if err := u.saveToPath(folderId, req.ReportFile, req.ReportFileHeader); err != nil {
+		if err := u.saveToPath(ctx, folderId, req.ReportFile, req.ReportFileHeader); err != nil {
 			errChan <- err
 			return
 		}
 		errChan <- nil
 	}()
 
-	fmt.Println("upload done")
+	l.Info("upload done").Msg()
 
 	err := <-errChan
 	if err != nil {
-		log.Println("error when save document")
+		l.Error("error when save document").Msg()
 		return api.CreateWebResponse("Error when save user document", http.StatusInternalServerError, nil, nil)
 	}
 
@@ -77,7 +78,8 @@ func (u *uploadDocumentService) SaveUploadedDocument(ctx context.Context, req *d
 
 }
 
-func (u *uploadDocumentService) saveToPath(folderId string, file multipart.File, header *multipart.FileHeader) error {
+func (u *uploadDocumentService) saveToPath(ctx context.Context, folderId string, file multipart.File, header *multipart.FileHeader) error {
+	l := logger.New().WithContext(ctx)
 	filename := header.Filename
 
 	safeFilename := filepath.Clean(filename)
@@ -88,7 +90,7 @@ func (u *uploadDocumentService) saveToPath(folderId string, file multipart.File,
 	_, err := os.Stat(filepath.Join(u.basePath, folderId))
 	if os.IsNotExist(err) {
 		if err := os.MkdirAll(filepath.Join(u.basePath, folderId), 0o755); err != nil {
-			log.Printf("Warning: Failed to create directory %s: %v\n", folderId, err)
+			l.Error("failed to create directory").Msg()
 			return err
 		}
 	}

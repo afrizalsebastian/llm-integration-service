@@ -2,9 +2,9 @@ package middleware
 
 import (
 	"context"
-	"log"
 	"net/http"
 
+	"github.com/afrizalsebastian/go-common-modules/logger"
 	"github.com/google/uuid"
 )
 
@@ -18,11 +18,13 @@ func Chain(h http.Handler, middlewares ...MiddlewareFunc) http.Handler {
 }
 
 func RecoveryMiddleware() func(next http.Handler) http.Handler {
+	l := logger.New()
+
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			defer func() {
 				if rec := recover(); rec != nil {
-					log.Println("Recoverd from panic")
+					l.Info("Recoverd from panic")
 					http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				}
 			}()

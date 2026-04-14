@@ -2,11 +2,12 @@ package cli
 
 import (
 	"context"
-	"log"
+	"os"
 	"time"
 
 	"github.com/IBM/sarama"
 	"github.com/afrizalsebastian/go-common-modules/kafka"
+	"github.com/afrizalsebastian/go-common-modules/logger"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/bootstrap"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/handlers"
 	"github.com/spf13/cobra"
@@ -32,16 +33,20 @@ var consumerCommand = &cobra.Command{
 }
 
 func startConsumer(app *bootstrap.Application, cmd *cobra.Command) {
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
+	l := logger.New()
 	consumerTopic, _ := cmd.Flags().GetString("topic")
 	if consumerTopic == "" {
-		log.Fatal("Consumer topic is required. User --topic=<consumer-topic>")
+		l.Warn("Consumer topic is required. User --topic=<consumer-topic>").Msg()
+		os.Exit(1)
 	}
 
 	handlerConsumer, err := handlers.NewConsumer(app)
 	if err != nil {
-		log.Fatal("Consumer handler failed to initialize.")
+		l.Error("Consumer handler failed to initialize.").Msg()
 		return
 	}
 
@@ -49,17 +54,20 @@ func startConsumer(app *bootstrap.Application, cmd *cobra.Command) {
 	case app.ENV.KafkaCvEvaluatorTopic:
 		consumer, err := createConsumer(app, handlerConsumer.CvEvaluatorConsumer, app.ENV.KafkaCvEvaluatorTopic, app.ENV.KafkaCvEvaluatorTopicGroup)
 		if err != nil {
-			log.Fatal("Error connection consumer, err: ", err)
+			l.Errorf("Error connection consumer, err: %v", err).Msg()
+			os.Exit(1)
 		}
 
 		ctx = context.WithValue(ctx, "consumer_topic", consumerTopic)
 		err = consumer.Run(ctx)
 		if err != nil {
-			log.Fatal("Error running consumer, err: ", err)
+			l.Errorf("Error running consumer, err: %v", err).Msg()
+			os.Exit(1)
 		}
 
 	default:
-		log.Fatalf("Unknown consumer name: %s", consumerTopic)
+		l.Errorf("Unknown consumer name: %s", consumerTopic).Msg()
+		os.Exit(1)
 	}
 
 }

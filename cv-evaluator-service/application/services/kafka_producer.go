@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"log"
 
 	"github.com/afrizalsebastian/go-common-modules/kafka"
+	"github.com/afrizalsebastian/go-common-modules/logger"
 )
 
 type IKafkaProducer interface {
@@ -24,8 +24,10 @@ func NewKafkaProducer(producer *kafka.Producer) IKafkaProducer {
 }
 
 func (k *kafkaProducer) PublishMessage(ctx context.Context, topic string, key, message interface{}) error {
+	l := logger.New().WithContext(ctx)
+
 	if k.producer == nil {
-		log.Println("kafka not initialized")
+		l.Warn("kafka not initialized").Msg()
 		return errors.New("kafka not initialized")
 	}
 
@@ -35,7 +37,7 @@ func (k *kafkaProducer) PublishMessage(ctx context.Context, topic string, key, m
 	_, _, err := k.producer.Publish(topic, byteKey, byteMessage)
 
 	if err != nil {
-		log.Println("kafka failed to publish message")
+		l.Warn("kafka failed to publish message").Msg()
 		return err
 	}
 

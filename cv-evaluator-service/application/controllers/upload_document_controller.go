@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"context"
-	"log"
 	"net/http"
 
+	"github.com/afrizalsebastian/go-common-modules/logger"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/api"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/application/helper"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/application/services"
@@ -25,16 +25,18 @@ func NewUploadDocumenController(uploadDocumentService services.IUploadDocumentSe
 }
 
 func (u *uploadDocumentController) PostDocument(ctx context.Context, r *http.Request) api.WebResponse {
+	l := logger.New().WithContext(ctx)
+
 	multipartRequest, err := helper.ParseMultipartRequest(r)
 	if err != nil {
-		log.Println("error when parse body request")
+		l.Error("error when parse body request").Msg()
 		return api.CreateWebResponse("Invalid request", http.StatusBadRequest, nil, nil)
 	}
 
 	request := helper.MultipartToUploadDocumentRequest(multipartRequest)
 
 	if structErr := helper.ValidateParams(ctx, request); structErr != nil {
-		log.Println("error validation on body request")
+		l.Error("error validation on body request").Msg()
 		return api.CreateWebResponse("Invalid request", http.StatusBadRequest, nil, structErr)
 	}
 

@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/afrizalsebastian/go-common-modules/logger"
 	chromaclient "github.com/afrizalsebastian/llm-integration-service/modules/chroma-client"
 	"github.com/ledongthuc/pdf"
 )
@@ -62,6 +63,8 @@ func NewIngestFile(chroma chromaclient.IChromaClient) IIngestFile {
 }
 
 func (i *ingestFile) ExtractTextFromPdf(path string) (string, error) {
+	l := logger.New()
+
 	f, r, err := pdf.Open(path)
 	if err != nil {
 		return "", ErrOpenPdfFile
@@ -79,7 +82,7 @@ func (i *ingestFile) ExtractTextFromPdf(path string) (string, error) {
 
 		content, err := p.GetPlainText(nil)
 		if err != nil {
-			fmt.Println("error when get the text from file")
+			l.Warn("error when get the text from file").Msg()
 			continue
 		}
 

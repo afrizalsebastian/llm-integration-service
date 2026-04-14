@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net"
 	"net/http"
 	"os"
@@ -13,6 +12,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/afrizalsebastian/go-common-modules/logger"
 	"github.com/afrizalsebastian/llm-integration-service/llm-service/bootstrap"
 	"github.com/afrizalsebastian/llm-integration-service/llm-service/handlers"
 	"github.com/afrizalsebastian/llm-integration-service/llm-service/infrastructure/middleware"
@@ -28,25 +28,27 @@ import (
 func main() {
 	app := bootstrap.NewApp()
 
+	l := logger.New()
+
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
 
 	// start grpc server
 	grpcServer, err := startGRPCServer(app)
 	if err != nil {
-		log.Fatalln("GRPC Server failed to start")
+		l.Warn("GRPC Server failed to start").Msg()
 		os.Exit(1)
 	}
 
 	// start http gateway server
 	gatewayServer, err := startHTTPGatewayServer(app)
 	if err != nil {
-		log.Fatalln("HTTP Gateway Server failed to start")
+		l.Warn("HTTP Gateway Server failed to start").Msg()
 		os.Exit(1)
 	}
 
 	<-signalChan
-	log.Println("Shutting down server")
+	l.Info("Shutting down server").Msg()
 
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer shutdownCancel()
@@ -54,16 +56,16 @@ func main() {
 	shutdownDone := make(chan struct{}, 2)
 	// stopping http gateway
 	go func() {
-		log.Println("shutting down HTTP gateway...")
+		l.Info("shutting down HTTP gateway...").Msg()
 		if err := gatewayServer.Shutdown(shutdownCtx); err != nil {
-			log.Printf("HTTP gateway shutdown error: %v", err)
+			l.Errorf("HTTP gateway shutdown error: %v", err).Msg()
 		}
 		shutdownDone <- struct{}{}
 	}()
 
 	go func() {
 		// stopping grpcServer
-		log.Println("Shutting down grpc server")
+		l.Info("Shutting down grpc server").Msg()
 		grpcServer.GracefulStop()
 		shutdownDone <- struct{}{}
 	}()
@@ -72,12 +74,14 @@ func main() {
 		<-shutdownDone
 	}
 
-	log.Println("✅ Server exited gracefully")
+	l.Info("✅ Server exited gracefully").Msg()
 }
 
 func startGRPCServer(app *bootstrap.Application) (*grpc.Server, error) {
 	_, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
+	l := logger.New()
 
 	lis, err := net.Listen("tcp", ":"+app.ENV.GrpcPort)
 	if err != nil {
@@ -90,7 +94,7 @@ func startGRPCServer(app *bootstrap.Application) (*grpc.Server, error) {
 	)
 	grpcHandlers, err := handlers.NewServer(app)
 	if err != nil {
-		log.Fatal("failed to init server")
+		l.Warn("failed to init server").Msg()
 		os.Exit(1)
 	}
 	proto.RegisterLlmServiceServer(server, grpcHandlers)
@@ -100,9 +104,9 @@ func startGRPCServer(app *bootstrap.Application) (*grpc.Server, error) {
 	middleware.GrpcMetric.InitializeMetrics(server)
 
 	go func() {
-		log.Printf("🚀 GRPC Server is running on port %s\n", app.ENV.GrpcPort)
+		l.Infof("🚀 GRPC Server is running on port %s\n", app.ENV.GrpcPort).Msg()
 		if err := server.Serve(lis); err != nil {
-			log.Fatalln("GRPC Server failed to start")
+			l.Warn("GRPC Server failed to start").Msg()
 			os.Exit(1)
 		}
 	}()
@@ -114,9 +118,11 @@ func startHTTPGatewayServer(app *bootstrap.Application) (*http.Server, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	l := logger.New()
+
 	server, err := handlers.NewServer(app)
 	if err != nil {
-		log.Fatal("failed to init server")
+		l.Warn("failed to init server").Msg()
 		os.Exit(1)
 	}
 
@@ -143,7 +149,7 @@ func startHTTPGatewayServer(app *bootstrap.Application) (*http.Server, error) {
 
 	grpcMux := runtime.NewServeMux(jsonOption, errorHandling)
 	if err := proto.RegisterLlmServiceHandlerServer(ctx, grpcMux, server); err != nil {
-		log.Fatal("Failed to create http gateway")
+		l.Warn("Failed to create http gateway").Msg()
 		os.Exit(1)
 	}
 
@@ -151,7 +157,7 @@ func startHTTPGatewayServer(app *bootstrap.Application) (*http.Server, error) {
 	mux.Handle("/api/v1/llm/", http.StripPrefix("/api/v1/llm", grpcMux))
 	mux.Handle("/metrics", promhttp.Handler())
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		log.Println("404 --- route not found")
+		l.Info("404 --- route not found").Msg()
 		http.Error(w, "404 - route not found", http.StatusNotFound)
 	})
 
@@ -170,9 +176,9 @@ func startHTTPGatewayServer(app *bootstrap.Application) (*http.Server, error) {
 
 	// start server
 	go func() {
-		log.Printf("🚀 Server is running on port %v\n", app.ENV.AppPort)
+		l.Infof("🚀 Server is running on port %v", app.ENV.AppPort).Msg()
 		if err := serve.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Fatalln("server failed to start")
+			l.Warn("server failed to start").Msg()
 			os.Exit(1)
 		}
 	}()

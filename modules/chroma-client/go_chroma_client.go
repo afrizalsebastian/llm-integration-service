@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/afrizalsebastian/go-common-modules/logger"
 	chroma "github.com/amikos-tech/chroma-go/pkg/api/v2"
 	"github.com/amikos-tech/chroma-go/pkg/embeddings"
 )
@@ -45,6 +46,7 @@ func NewChromaClient(ctx context.Context, chromaUrl string) (IChromaClient, erro
 }
 
 func (c *chromaClient) Upsert(ctx context.Context, collectionName, id, content string, metadata map[string]interface{}) error {
+	l := logger.New()
 	collection, err := c.cli.GetOrCreateCollection(ctx, collectionName, chroma.WithEmbeddingFunctionCreate(embeddings.NewConsistentHashEmbeddingFunction()))
 	if err != nil {
 		return fmt.Errorf("failed to create collection: %w", err)
@@ -60,7 +62,7 @@ func (c *chromaClient) Upsert(ctx context.Context, collectionName, id, content s
 		case float64:
 			metaAttributes = append(metaAttributes, chroma.NewFloatAttribute(k, val))
 		default:
-			fmt.Printf("Warning: Unsupported metadata type for key '%s'\n", k)
+			l.Warn("Unsupported metadata type for key " + k).Msg()
 		}
 	}
 

@@ -3,11 +3,11 @@ package service_consumer
 import (
 	"context"
 	"fmt"
-	"log"
 	"path"
 	"strings"
 	"time"
 
+	"github.com/afrizalsebastian/go-common-modules/logger"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/domain/models/dao"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/domain/models/dto"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/domain/repository"
@@ -42,13 +42,15 @@ func NewCvEvaluatorConsumerService(
 }
 
 func (c *cvEvaluatorConsumerService) RunningJob(ctx context.Context, jobId string) error {
+	l := logger.New()
+
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Minute)
 	defer cancel()
 
 	// Todo: Get JOB ITEM FROM DB
 	job, err := c.cvEvaluator.GetByJobId(ctx, jobId)
 	if err != nil {
-		log.Println("failed to get job item")
+		l.Error("failed to get job item").Msg()
 		return err
 	}
 
@@ -95,7 +97,7 @@ func (c *cvEvaluatorConsumerService) RunningJob(ctx context.Context, jobId strin
 	}
 	job.CvMatchRate = cvResult[0]
 	job.CvFeedback = cvResult[1]
-	fmt.Println("job with id " + job.JobId + " have done processed cv")
+	l.Info("job with id " + job.JobId + " have done processed cv").Msg()
 
 	// Evaluate Report
 	caseStudyBrief, err := c.chroma.Query(ctx, "case_study_brief", job.JobTitle+" "+"case study brief", 5)
@@ -124,7 +126,7 @@ func (c *cvEvaluatorConsumerService) RunningJob(ctx context.Context, jobId strin
 	}
 	job.ProjectScore = reportResult[0]
 	job.ProjectFeedback = reportResult[1]
-	fmt.Println("job with id " + job.JobId + " have done processed report")
+	l.Info("job with id " + job.JobId + " have done processed report").Msg()
 
 	// final
 	finalPrompt := c.buildFinalPrompt(job.CvMatchRate, job.CvFeedback, job.ProjectScore, job.ProjectFeedback)
@@ -141,7 +143,8 @@ func (c *cvEvaluatorConsumerService) RunningJob(ctx context.Context, jobId strin
 }
 
 func (w *cvEvaluatorConsumerService) jobFailToProcess(ctx context.Context, job *dao.CvEvaluatorJob, err error) {
-	fmt.Printf("job with id %s failed to process: %s\n", job.JobId, err.Error())
+	l := logger.New().WithContext(ctx)
+	l.Error("job with id " + job.JobId + " failed to process: " + err.Error()).Msg()
 	job.Status = dto.StatusFailed
 	_ = w.cvEvaluator.UpdateJobByJobId(ctx, job.JobId, job)
 }

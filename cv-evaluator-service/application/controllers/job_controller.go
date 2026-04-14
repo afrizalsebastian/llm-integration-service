@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"context"
-	"log"
 	"net/http"
 
+	"github.com/afrizalsebastian/go-common-modules/logger"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/api"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/application/helper"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/application/services"
@@ -29,15 +29,17 @@ func NewEvaluateController(
 }
 
 func (e *jobController) EnqueueJob(ctx context.Context, r *http.Request) api.WebResponse {
+	l := logger.New().WithContext(ctx)
+
 	request, err := helper.ParseJSONBodyRequest[dto.EvaluateRequest](r)
 	if err != nil {
-		log.Println("error when parse body request")
+		l.Error("error when parse body request").Msg()
 		return api.CreateWebResponse("invalid request", http.StatusBadRequest, nil, nil)
 	}
 
 	// validation
 	if err := helper.ValidateParams(ctx, request); err != nil {
-		log.Println("validation error")
+		l.Error("validation error").Msg()
 		return api.CreateWebResponse("validation error", http.StatusBadRequest, nil, err)
 	}
 

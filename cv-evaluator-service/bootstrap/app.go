@@ -2,13 +2,13 @@ package bootstrap
 
 import (
 	"context"
-	"log"
 	"os"
 
 	"github.com/IBM/sarama"
 	appconfig "github.com/afrizalsebastian/go-common-modules/app-config"
 	gomysql "github.com/afrizalsebastian/go-common-modules/go-mysql"
 	"github.com/afrizalsebastian/go-common-modules/kafka"
+	"github.com/afrizalsebastian/go-common-modules/logger"
 	chromaclient "github.com/afrizalsebastian/llm-integration-service/modules/chroma-client"
 	"github.com/afrizalsebastian/llm-integration-service/modules/config"
 	geminiclient "github.com/afrizalsebastian/llm-integration-service/modules/gemini-client"
@@ -28,15 +28,18 @@ type Application struct {
 func NewApp() *Application {
 	ctx := context.Background()
 	app := &Application{}
+	l := logger.New()
 
 	wd, err := os.Getwd()
 	if err != nil {
-		log.Fatal("Failed to get working directory")
+		l.Error("Failed to get working directory").Msg()
+		os.Exit(1)
 	}
 
 	app.ENV, err = appconfig.Init[config.Config](wd)
 	if err != nil {
-		log.Fatal("failed to initialize configuration")
+		l.Error("failed to initialize configuration").Msg()
+		os.Exit(1)
 	}
 
 	// Init DB
@@ -49,21 +52,24 @@ func NewApp() *Application {
 	}
 	db, err := gomysql.NewDatabaseConnection(dbConfig)
 	if err != nil {
-		log.Fatal("failed to create db connection")
+		l.Error("failed to create db connection").Msg()
+		os.Exit(1)
 	}
 	app.DB = db
 
 	// Init Gemini Client
 	geminiCient, err := geminiclient.NewGeminiAiCLient(ctx, app.ENV.GeminiApiKey, app.ENV.GeminiModel)
 	if err != nil {
-		log.Fatal("failed to init gemini client")
+		l.Error("failed to init gemini client").Msg()
+		os.Exit(1)
 	}
 	app.GeminiClient = geminiCient
 
 	// Init chroma
 	chromaClient, err := chromaclient.NewChromaClient(ctx, app.ENV.ChromaUrl)
 	if err != nil {
-		log.Fatalf("failed to init chroma client, %s", err.Error())
+		l.Errorf("failed to init chroma client, %s", err.Error()).Msg()
+		os.Exit(1)
 	}
 	app.ChromaClient = chromaClient
 
@@ -81,7 +87,7 @@ func NewApp() *Application {
 		},
 	)
 	if err != nil {
-		log.Println("Kafka producer failed to initialize")
+		l.Warn("Kafka producer failed to initialize")
 	}
 	app.KafkaProducer = kafkaProducer
 
