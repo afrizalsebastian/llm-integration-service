@@ -1,15 +1,5 @@
 package config
 
-import (
-	"errors"
-)
-
-var (
-	ErrOsGetPwd            = errors.New("failed to get working directory")
-	ErrReadConfigFile      = errors.New("failed to read config file")
-	ErrUnmarshalConfigFile = errors.New("failed to read config file")
-)
-
 type Config struct {
 	AppPort                    int      `mapstructure:"PORT"`
 	GeminiApiKey               string   `mapstructure:"GEMINI_API_KEY"`
