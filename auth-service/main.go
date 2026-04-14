@@ -1,4 +1,4 @@
-package cli
+package main
 
 import (
 	"context"
@@ -11,44 +11,20 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/bootstrap"
-	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/handlers"
-	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/infrastructure/middleware"
-	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/internal/generated"
+	"github.com/afrizalsebastian/llm-integration-service/auth-service/bootstrap"
+	"github.com/afrizalsebastian/llm-integration-service/auth-service/handlers"
+	"github.com/afrizalsebastian/llm-integration-service/auth-service/internal/generated"
 	sharedmiddleware "github.com/afrizalsebastian/llm-integration-service/modules/shared-middleware"
 	"github.com/gorilla/mux"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/spf13/cobra"
 )
-
-type appKeyType struct{}
-
-var appKey = appKeyType{}
 
 const apiPrefix = "/api/v1"
 
-func init() {
-	rootCmd.AddCommand(serveCommand)
-}
-
-var serveCommand = &cobra.Command{
-	Use:   "serve",
-	Short: "Start The HTTP server Go Evaluator",
-	PreRun: func(cmd *cobra.Command, args []string) {
-		app := bootstrap.NewApp()
-		ctx := context.WithValue(cmd.Context(), appKey, app)
-		cmd.SetContext(ctx)
-	},
-	Run: func(cmd *cobra.Command, args []string) {
-		app := cmd.Context().Value(appKey).(*bootstrap.Application)
-		startHTTPServer(app)
-
-	},
-}
-
-func startHTTPServer(app *bootstrap.Application) {
+func main() {
 	_, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
+	app := bootstrap.NewApp()
 
 	mainRouter := mux.NewRouter()
 	mainRouter.Use(sharedmiddleware.RecoveryMiddleware())
@@ -61,16 +37,9 @@ func startHTTPServer(app *bootstrap.Application) {
 	})
 
 	apiV1Router := mainRouter.PathPrefix(apiPrefix).Subrouter()
+	apiServer := handlers.NewServer(app)
 
-	apiServer, err := handlers.NewServer(app)
-	if err != nil {
-		log.Fatal("failed to init server")
-		os.Exit(1)
-	}
-
-	// METRICS
-	mainRouter.Handle("/metrics", promhttp.Handler()).Methods("GET")
-
+	// check app readiness
 	apiV1Router.HandleFunc("/readiness", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("Service is ready"))
@@ -84,14 +53,17 @@ func startHTTPServer(app *bootstrap.Application) {
 		},
 	})
 
-	mainRouter.PathPrefix(apiPrefix).Handler(registerCommonMiddleware(app, oApiHandlers))
+	mainRouter.PathPrefix(apiPrefix).Handler(registerCommonMiddleware(
+		app,
+		oApiHandlers,
+	))
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%v", app.ENV.AppPort),
 		Handler: mainRouter,
 	}
 
-	// Gracefull shutdown
+	// Graceful shutdown
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
 
@@ -105,7 +77,7 @@ func startHTTPServer(app *bootstrap.Application) {
 	}()
 
 	// wait for signal
-	_ = <-signalChan
+	<-signalChan
 	log.Println("Shutting down server...")
 
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -121,7 +93,6 @@ func startHTTPServer(app *bootstrap.Application) {
 func registerCommonMiddleware(_ *bootstrap.Application, handler http.Handler) http.Handler {
 	middleware := []sharedmiddleware.MiddlewareFunc{
 		sharedmiddleware.RequestTracing(),
-		middleware.MonitorMiddleware(),
 	}
 
 	for _, m := range middleware {

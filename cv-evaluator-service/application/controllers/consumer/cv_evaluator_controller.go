@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/afrizalsebastian/go-common-modules/kafka"
 	service_consumer "github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/application/services/consumer"
-	"github.com/afrizalsebastian/llm-integration-service/modules/kafka"
 )
 
 type ICvEvaluatorControllerConsumer interface {

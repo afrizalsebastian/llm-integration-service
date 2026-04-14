@@ -6,7 +6,7 @@ import (
 	"errors"
 	"log"
 
-	"github.com/afrizalsebastian/llm-integration-service/modules/kafka"
+	"github.com/afrizalsebastian/go-common-modules/kafka"
 )
 
 type IKafkaProducer interface {
