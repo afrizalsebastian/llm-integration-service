@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/IBM/sarama"
+	"github.com/afrizalsebastian/go-common-modules/kafka"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/bootstrap"
 	"github.com/afrizalsebastian/llm-integration-service/cv-evaluator-service/handlers"
-	"github.com/afrizalsebastian/llm-integration-service/modules/kafka"
 	"github.com/spf13/cobra"
 )
 

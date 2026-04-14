@@ -6,17 +6,18 @@ import (
 	"os"
 
 	"github.com/IBM/sarama"
-	appconfig "github.com/afrizalsebastian/llm-integration-service/modules/app-config"
+	appconfig "github.com/afrizalsebastian/go-common-modules/app-config"
+	gomysql "github.com/afrizalsebastian/go-common-modules/go-mysql"
+	"github.com/afrizalsebastian/go-common-modules/kafka"
 	chromaclient "github.com/afrizalsebastian/llm-integration-service/modules/chroma-client"
+	"github.com/afrizalsebastian/llm-integration-service/modules/config"
 	geminiclient "github.com/afrizalsebastian/llm-integration-service/modules/gemini-client"
-	gomysql "github.com/afrizalsebastian/llm-integration-service/modules/go-mysql"
 	ingestdocument "github.com/afrizalsebastian/llm-integration-service/modules/ingest-document"
-	"github.com/afrizalsebastian/llm-integration-service/modules/kafka"
 	"gorm.io/gorm"
 )
 
 type Application struct {
-	ENV           *appconfig.Config
+	ENV           *config.Config
 	GeminiClient  geminiclient.IGeminiClient
 	ChromaClient  chromaclient.IChromaClient
 	Ingest        ingestdocument.IIngestFile
@@ -33,7 +34,7 @@ func NewApp() *Application {
 		log.Fatal("Failed to get working directory")
 	}
 
-	app.ENV, err = appconfig.Init(wd)
+	app.ENV, err = appconfig.Init[config.Config](wd)
 	if err != nil {
 		log.Fatal("failed to initialize configuration")
 	}
