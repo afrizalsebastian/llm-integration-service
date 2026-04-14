@@ -4,13 +4,14 @@ import (
 	"log"
 	"os"
 
-	appconfig "github.com/afrizalsebastian/llm-integration-service/modules/app-config"
+	appconfig "github.com/afrizalsebastian/go-common-modules/app-config"
+	"github.com/afrizalsebastian/llm-integration-service/modules/config"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
 
 type Application struct {
-	ENV              *appconfig.Config
+	ENV              *config.Config
 	GoogleAuthConfig *oauth2.Config
 }
 
@@ -22,7 +23,7 @@ func NewApp() *Application {
 		log.Fatal("Failed to get working directory")
 	}
 
-	app.ENV, err = appconfig.Init(wd)
+	app.ENV, err = appconfig.Init[config.Config](wd)
 	if err != nil {
 		log.Fatal("failed to initialize configuration")
 	}
