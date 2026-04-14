@@ -62,7 +62,7 @@ func startHTTPServer(app *bootstrap.Application) {
 		http.Error(w, "404 - route not found", http.StatusNotFound)
 	})
 
-	apiV1Router := mainRouter.PathPrefix(apiPrefix).Subrouter()
+	apiV1Router := mux.NewRouter().PathPrefix(apiPrefix).Subrouter()
 
 	apiServer, err := handlers.NewServer(app)
 	if err != nil {
@@ -71,7 +71,7 @@ func startHTTPServer(app *bootstrap.Application) {
 	}
 
 	// METRICS
-	mainRouter.Handle("/metrics", promhttp.Handler()).Methods("GET")
+	apiV1Router.Handle("/metrics", promhttp.Handler()).Methods("GET")
 
 	apiV1Router.HandleFunc("/readiness", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)

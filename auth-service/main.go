@@ -38,7 +38,7 @@ func main() {
 		http.Error(w, "404 - route not found", http.StatusNotFound)
 	})
 
-	apiV1Router := mainRouter.PathPrefix(apiPrefix).Subrouter()
+	apiV1Router := mux.NewRouter().PathPrefix(apiPrefix).Subrouter()
 	apiServer := handlers.NewServer(app)
 
 	// check app readiness
